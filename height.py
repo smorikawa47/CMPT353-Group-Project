@@ -20,6 +20,7 @@ def butterworth_filter(dataframe):
     low_passed = signal.filtfilt(b, a, dataframe['atotal'])
     return low_passed
 
+#https://stackoverflow.com/questions/4225432/how-to-compute-frequency-of-data-using-fft
 def step_frequencies(dataframe, low_passed):
     dataframe['fftx'] = fft.fft(low_passed)
     dataframe['fftx'] = fft.fftshift(dataframe['fftx'])

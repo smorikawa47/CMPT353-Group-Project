@@ -20,15 +20,26 @@ def butterworth_filter(dataframe):
     low_passed = signal.filtfilt(b, a, dataframe['atotal'])
     return low_passed
 
-# Work in progress
-# def step_frequencies(dataframe, low_pass):
+def step_frequencies(dataframe, low_passed):
+    dataframe['fftx'] = fft.fft(low_passed)
+    dataframe['fftx'] = fft.fftshift(dataframe['fftx'])
+    dataframe['fftx'] = abs(dataframe['fftx'])
+
+    first_sample = dataframe['time'].iloc[0]
+    last_sample = dataframe['time'].iloc[-1]
+    num_samples = len(dataframe)
+
+    dt = round(num_samples/(last_sample - first_sample))
+    dataframe['freq'] = np.linspace(-dt/2, dt/2, num = len(dataframe))
+    dataframe = dataframe[dataframe['freq'] > 0.1]
+    return dataframe
 
 # 5'10
-data_set1_5f10 = readfile('DataSets/Flat/Amog1.csv')
-data_set2_5f10 = readfile('DataSets/Flat/Amog2.csv')
-data_set3_5f10 = readfile('DataSets/Flat/Amog3.csv')
-data_set4_5f10 = readfile('DataSets/Flat/Amog4.csv')
-data_set5_5f10 = readfile('DataSets/Flat/Amog5.csv')
+data_set1_5f10 = readfile('DataSets/Flat/Amog_flat1.csv')
+data_set2_5f10 = readfile('DataSets/Flat/Amog_flat2.csv')
+data_set3_5f10 = readfile('DataSets/Flat/Amog_flat3.csv')
+data_set4_5f10 = readfile('DataSets/Flat/Amog_flat4.csv')
+data_set5_5f10 = readfile('DataSets/Flat/Amog_flat5.csv')
 
 linearComb_1_5f10 = raw_to_linearCombination(data_set1_5f10)
 linearComb_2_5f10 = raw_to_linearCombination(data_set2_5f10)
@@ -64,32 +75,30 @@ linearComb_5_5f5 = raw_to_linearCombination(data_set5_5f5)
 
 data_set_5f5_lst = [linearComb_1_5f5, linearComb_2_5f5, linearComb_3_5f5, linearComb_4_5f5, linearComb_5_5f5]
 
-count = 1
+# contains dataframes with fft, freq info
+fft_list_5f10 = []
+fft_list_5f8 = []
+fft_list_5f5 = []
+
+# contains rows wiht the highest fft value
+freq_list_5f10 = []
+freq_list_5f8 = []
+freq_list_5f5 = []
+
 for data_set in data_set_5f10_lst:
     low_passed = butterworth_filter(data_set)
-    plt.plot(data_set['time'], data_set['atotal'], 'b-')
-    plt.plot(data_set['time'], low_passed, 'g-')
-    plt.legend(['atotal', 'Filtered atotal'])
-    plt.title("5'10 Sample:" + str(count))
-    count = count + 1
-    plt.figure()
-    
-count = 1
+    data_set = step_frequencies(data_set, low_passed)
+    fft_list_5f10.append(data_set)
+    freq_list_5f10.append(data_set.iloc[data_set['fftx'].argmax()])
+
 for data_set in data_set_5f8_lst:
     low_passed = butterworth_filter(data_set)
-    plt.plot(data_set['time'], data_set['atotal'], 'b-')
-    plt.plot(data_set['time'], low_passed, 'g-')
-    plt.legend(['atotal', 'Filtered atotal'])
-    plt.title("5'8 Sample:" + str(count))
-    count = count + 1
-    plt.figure()
+    data_set = step_frequencies(data_set, low_passed)
+    fft_list_5f8.append(data_set)
+    freq_list_5f8.append(data_set.iloc[data_set['fftx'].argmax()])
 
-count = 1
 for data_set in data_set_5f5_lst:
     low_passed = butterworth_filter(data_set)
-    plt.plot(data_set['time'], data_set['atotal'], 'b-')
-    plt.plot(data_set['time'], low_passed, 'g-')
-    plt.legend(['atotal', 'Filtered atotal'])
-    plt.title("5'5 Sample:" + str(count))
-    count = count + 1
-    plt.figure()
+    data_set = step_frequencies(data_set, low_passed)
+    fft_list_5f5.append(data_set)
+    freq_list_5f5.append(data_set.iloc[data_set['fftx'].argmax()])

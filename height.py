@@ -11,8 +11,7 @@ def readfile(path):
 def raw_to_linearCombination(dataframe):
     # cut the first and the last 2 seconds to ignore the part where a participant is starting to walk/stop
     dataframe = dataframe[dataframe['time'] > 2]
-    dataframe = dataframe[dataframe['time'] < (dataframe['time'].iloc[-1] - 2)]
-    linearComb = dataframe.drop(dataframe.columns[[1, 2, 3]], axis=1)
+    linearComb = dataframe[dataframe['time'] < (dataframe['time'].iloc[-1] - 2)]
     return linearComb
 
 def butterworth_filter(dataframe):
@@ -81,24 +80,38 @@ fft_list_5f8 = []
 fft_list_5f5 = []
 
 # contains rows wiht the highest fft value
-freq_list_5f10 = []
-freq_list_5f8 = []
-freq_list_5f5 = []
+freq_rows_5f10 = []
+freq_rows_5f8 = []
+freq_rows_5f5 = []
 
 for data_set in data_set_5f10_lst:
     low_passed = butterworth_filter(data_set)
     data_set = step_frequencies(data_set, low_passed)
     fft_list_5f10.append(data_set)
-    freq_list_5f10.append(data_set.iloc[data_set['fftx'].argmax()])
+    freq_rows_5f10.append(data_set.iloc[data_set['fftx'].argmax()])
 
 for data_set in data_set_5f8_lst:
     low_passed = butterworth_filter(data_set)
     data_set = step_frequencies(data_set, low_passed)
     fft_list_5f8.append(data_set)
-    freq_list_5f8.append(data_set.iloc[data_set['fftx'].argmax()])
+    freq_rows_5f8.append(data_set.iloc[data_set['fftx'].argmax()])
 
 for data_set in data_set_5f5_lst:
     low_passed = butterworth_filter(data_set)
     data_set = step_frequencies(data_set, low_passed)
     fft_list_5f5.append(data_set)
-    freq_list_5f5.append(data_set.iloc[data_set['fftx'].argmax()])
+    freq_rows_5f5.append(data_set.iloc[data_set['fftx'].argmax()])
+
+
+freq_vals_5f10 = []
+freq_vals_5f8 = []
+freq_vals_5f5 = []
+
+for i in range(len(freq_rows_5f10)):
+    freq_vals_5f10.append(freq_rows_5f10[i][6])
+
+for i in range(len(freq_rows_5f8)):
+    freq_vals_5f8.append(freq_rows_5f8[i][6])
+
+for i in range(len(freq_rows_5f5)):
+    freq_vals_5f5.append(freq_rows_5f5[i][6])

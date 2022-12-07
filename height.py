@@ -4,6 +4,7 @@ from scipy import signal
 import sys
 import matplotlib.pyplot as plt
 from scipy import fft
+from scipy import stats
 
 def readfile(path):
     return pd.read_csv(path)
@@ -115,3 +116,11 @@ for i in range(len(freq_rows_5f8)):
 
 for i in range(len(freq_rows_5f5)):
     freq_vals_5f5.append(freq_rows_5f5[i][6])
+
+# all p-vals < 0.05, meaning difference exists
+# 0.03571428571428571
+# 0.007936507936507936
+# 0.03571428571428571
+print(stats.mannwhitneyu(freq_vals_5f10, freq_vals_5f8).pvalue)
+print(stats.mannwhitneyu(freq_vals_5f10, freq_vals_5f5).pvalue)
+print(stats.mannwhitneyu(freq_vals_5f8, freq_vals_5f5).pvalue)

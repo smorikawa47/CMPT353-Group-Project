@@ -133,7 +133,18 @@ def processDataFiles(filenames, outputName):
         low_passed = signal.filtfilt(b, a, linearCombination)
         data['low_passed'] = low_passed
         
-        ## show plot of low pass.
+        ## To show plot of unfiltered, single signal
+        # plt.plot(data['time'], linearCombination)
+        # plt.title('Unfiltered Total Acceleration Sensor Data over Time')
+        # plt.xlabel('Time')
+        # plt.ylabel('Total Acceleration')
+        
+        # To show plot of filtered, low pass of a single signal
+        # plt.plot(data['time'], low_passed)
+        # plt.title('Filtered Total Acceleration Sensor Data over Time')
+        # plt.xlabel('Time')
+        # plt.ylabel('Total Acceleration')
+        
     
         #https://stackoverflow.com/questions/4225432/how-to-compute-frequency-of-data-using-fft
     
@@ -146,11 +157,13 @@ def processDataFiles(filenames, outputName):
         num_samples = len(data)
     
         dt = round(num_samples/(last_sample - first_sample))
-        data['freq'] = np.linspace(-dt/2, dt/2, num = len(data))
+        data['freq'] = np.linspace(-dt/2, dt/2, num = len(data)) #create the frequency axis
         data['walking_type'] = outputName[2:]
-        data = data[data['freq'] > 0.1] 
+        data = data[data['freq'] > 0.1]  # take only positive frequencies, discard what we dont need
         row = data.iloc[data['fftx'].argmax()]
         frequencies.append(row['freq'])
+        
+        
         
     npArray = np.asarray(frequencies)
     return npArray
@@ -160,6 +173,40 @@ def writeFrequenciesToFile(freq_array, walking_type):
     df['frequencies'] = freq_array
     df['walking_type'] = walking_type
     df.to_csv(walking_type + '.csv', index = False)
+    
+    
+def showFFT():
+    data = pd.read_csv("flat3.csv")
+    data = data[data['time'] > 2]
+    data = data[data['time'] < (data['time'].iloc[-1] - 3)]
+
+    linearCombination = data["aT (m/s^2)"]
+    b, a = signal.butter(3, 0.1, btype='lowpass', analog=False)
+    low_passed = signal.filtfilt(b, a, linearCombination)
+    data['low_passed'] = low_passed
+    
+    ## show plot of low pass.
+
+    #https://stackoverflow.com/questions/4225432/how-to-compute-frequency-of-data-using-fft
+
+    data['fftx'] = fft.fft(low_passed)  # perform fourier transform
+    data['fftx'] = fft.fftshift(data['fftx']) # shifts the data so the frequency of 0 is centered.
+    data['fftx'] = abs(data['fftx']) # take absolute values
+
+    first_sample = data['time'].iloc[0] # first data sample
+    last_sample = data['time'].iloc[-1] # last data sample
+    num_samples = len(data)
+
+    dt = round(num_samples/(last_sample - first_sample))
+    data['freq'] = np.linspace(-dt/2, dt/2, num = len(data))
+    data = data[data['freq'] > 0.1] 
+    plt.plot(data['freq'], data['fftx'])
+    plt.title('Fourier transform from signal to frequencies')
+    plt.xlabel('Frequency')
+    plt.ylabel('Amplitude')
+
+
+
 
 shoes_frequencies = loadFlatWalkingShoesData()
 feet_frequencies = loadFlatWalkingWithoutShoesData()
@@ -173,12 +220,16 @@ writeFrequenciesToFile(downhill_frequencies, 'downhill')
 writeFrequenciesToFile(feet_frequencies, 'noshoes')
 
 
+# showFFT()
+
 plt.hist(shoes_frequencies, bins=10)
 plt.hist(feet_frequencies, bins=10)
 plt.hist(uphill_frequencies, bins=10)
 plt.hist(downhill_frequencies, bins=10)
 plt.hist(senior_frequencies, bins=10)
-plt.title('Histogram of frequencies')
+plt.title('Distribution of Walking frequencies')
+plt.ylabel('Count')
+plt.xlabel('Walking Frequency')
 
 
   

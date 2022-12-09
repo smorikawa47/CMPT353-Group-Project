@@ -16,6 +16,12 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 
 
+OUTPUT_TEMPLATE = (
+    'SVC classifier: {svc}\n'
+    'Bayesian classifier: {bayes}\n'
+    'Rand forest classifier:  {rf}\n'
+    'kNN classifier: {knn}\n'
+)
 
 
 def main(flat_file, uphill_file, downhill_file,noshoes_file):
@@ -34,19 +40,27 @@ def main(flat_file, uphill_file, downhill_file,noshoes_file):
     svc_model = SVC(kernel='linear', C=1)
     svc_model = GaussianNB()
     svc_model.fit(X_train, y_train)
-    print(svc_model.score(X_valid, y_valid))
+    # print(svc_model.score(X_valid, y_valid))
     
     bayes_model = GaussianNB()
     bayes_model.fit(X_train, y_train)
-    print(bayes_model.score(X_valid, y_valid))
+    # print(bayes_model.score(X_valid, y_valid))
  
     rf_model = RandomForestClassifier(n_estimators=75, min_samples_leaf=2)
     rf_model.fit(X_train, y_train)
-    print(rf_model.score(X_valid, y_valid))
+    # print(rf_model.score(X_valid, y_valid))
     
     knn_model = KNeighborsClassifier(n_neighbors=5)
     knn_model.fit(X_train, y_train)
-    print(knn_model.score(X_valid, y_valid))
+    # print(knn_model.score(X_valid, y_valid))
+    
+    
+    print(OUTPUT_TEMPLATE.format(
+    svc = svc_model.score(X_valid, y_valid),
+    bayes = bayes_model.score(X_valid, y_valid),
+    rf = rf_model.score(X_valid, y_valid),
+    knn= knn_model.score(X_valid, y_valid) 
+    ))
 
 if __name__ == '__main__':
     flat_file = sys.argv[1]

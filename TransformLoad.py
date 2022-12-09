@@ -176,7 +176,7 @@ def writeFrequenciesToFile(freq_array, walking_type):
     
     
 def showFFT():
-    data = pd.read_csv("flat3.csv")
+    data = pd.read_csv("flat3.csv") # change this file to any data file.
     data = data[data['time'] > 2]
     data = data[data['time'] < (data['time'].iloc[-1] - 3)]
 

@@ -1,6 +1,6 @@
 # CMPT353-Group-Project
 
-Before trying to the the python programs, ensure that following libraries/packages are installed:
+Before trying to run the python programs, ensure that following libraries/packages are installed:
 1) NumPy
 2) Pandas
 3) Matplotlib

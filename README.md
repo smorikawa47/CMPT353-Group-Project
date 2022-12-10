@@ -12,9 +12,11 @@ To retrieve U-test results for: Senior-Adult (Age 67 to 25), Shoes-NoShoes (Indi
 
 **1) python TransformLoad.py**
 
+
 Afterwards, to get the ML classification validation data, run the following command after running the TransformLoad.py program:
 
 **2) python Classification.py flat.csv uphill.csv downhill.csv noshoes.csv**
+
 
 
 To get the p-values for different combinations of height, run:
@@ -22,9 +24,11 @@ To get the p-values for different combinations of height, run:
 **1) python height.py**
 
 
+
 To get the p-value of injured VS normal step frequency by using U-test, run the command line below:
 
 **1) python injured.py**
+
 
 
 All results should be printed onto the terminal. 
